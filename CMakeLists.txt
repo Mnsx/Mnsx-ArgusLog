@@ -18,6 +18,9 @@ include_directories(ArgusLog PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+# 添加宏到编译器
+target_compile_definitions(ArgusLog PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}")
+
 # 定义实例程序
 add_executable(ArgusDemo examples/BasicUsage.cpp)
 
