@@ -51,5 +51,6 @@ namespace mnsx {
 #define LOG_DEBUG ::mnsx::argus::Logger(::mnsx::argus::LogLevel::DEBUG, __FILE__, __LINE__).stream()
 #define LOG_INFO  ::mnsx::argus::Logger(::mnsx::argus::LogLevel::INFO,  __FILE__, __LINE__).stream()
 #define LOG_ERROR ::mnsx::argus::Logger(::mnsx::argus::LogLevel::ERROR, __FILE__, __LINE__).stream()
+#define LOG_WARN  ::mnsx::argus::Logger(::mnsx::argus::LogLevel::WARN,  __FILE__, __LINE__).stream()
 
 #endif //ARGUSLOG_LOGGER_H
