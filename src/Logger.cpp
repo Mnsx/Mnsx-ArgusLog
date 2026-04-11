@@ -1,56 +1,37 @@
 /** 
  * @file Logger.cpp
  * @author Mnsx_x <xx1527030652@gmail.com>
- * @date 2026/4/7
- * @description 日志编写类接口实现
+ * @date 2026/4/11
  */
-
 #include "Logger.h"
+#include "LogEvent.h"
+#include "LogHandlerManager.h"
 
 #include <cstring>
 
-#include "LogBackend.h"
-#include "LogEvent.h"
+using namespace mnsx::argus;
 
-namespace mnsx {
-    static std::shared_ptr<LogBackend> g_backend = nullptr; // 全局日志处理类
-    static std::mutex g_backend_mtx; // 保护日志处理类切换的锁
-
-    void setGlobalLogBackend(std::shared_ptr<LogBackend> backend) {
-        std::lock_guard<std::mutex> lock(g_backend_mtx);
-        g_backend = std::move(backend);
-    }
-
-    std::shared_ptr<LogBackend> getGlobalLogBackend() {
-        std::lock_guard<std::mutex> lock(g_backend_mtx);
-        return g_backend;
-    }
-
-    Logger::Logger(LogLevel level, const char *file, int line)
-        : level_(level), line_(line) {
-
+Logger::Logger(LogLevel level, const char* file_path, int line) :
+    level_(level), line_(line) {
+    // 判断是否为项目根目录下的文件，如果是就是用相对路径
 #ifdef PROJECT_ROOT_DIR
-        const char* root = PROJECT_ROOT_DIR;
-        size_t root_len = std::strlen(root);
-        if (std::strncmp(file, root, root_len) == 0) {
-            this->file_ = file + root_len;
-        } else {
-            this->file_ = file;
-        }
+    const char *root = PROJECT_ROOT_DIR;
+    size_t root_len = std::strlen(root);
+    if (std::strncmp(file_path, root, root_len) == 0) {
+        file_path_ = file_path + root_len;
+    } else {
+        file_path_ = file_path;
+    }
 #else
-        this->file_ = file;
+    file_path_ = file_path;
 #endif
-    }
+}
 
-    Logger::~Logger() {
-
-        // 文本内容
-        std::string content = this->stream_.str();
-
-        // 包装日志
-        LogEvent event(this->level_, this->file_, this->line_, std::move(content));
-
-        // 将数据传到后端
-        mnsx::getGlobalLogBackend().get()->append(event);
-    }
+Logger::~Logger() {
+    // 文本内容
+    std::string content = stream_.str();
+    // 包装日志
+    LogEvent event(level_, file_path_, line_, std::move(content));
+    // 通知manager进行处理
+    LogHandlerManager::getInstance().pushEvent(event);
 }

@@ -4,18 +4,16 @@
  * @date 2026/4/6
  * @description 日志系统简单使用
  */
+#include "Logger.h"
+#include "LogHandlerManager.h"
 
 #include <iostream>
 #include <vector>
 
-#include "LogBackend.h"
-#include "Logger.h"
-
-using namespace mnsx;
+using namespace mnsx::argus;
 
 void stress_test(int id, int count) {
     for (int i = 0; i < count; ++i) {
-        // 测试不同的日志级别
         if (i % 10 == 0) {
             LOG_ERROR << "Thread " << id << " found a critical issue at iteration: " << i;
         } else {
@@ -27,12 +25,6 @@ void stress_test(int id, int count) {
 int main() {
     try {
         std::cout << "--- Mnsx-ArgusLog Day 1 Initialization ---" << std::endl;
-
-        // 1. 初始化后端：创建一个名为 argus_test.log 的文件
-        auto file_backend = std::make_shared<FileLogBackend>("argus_test.log");
-
-        // 2. 注入全局后端
-        mnsx::setGlobalLogBackend(file_backend);
 
         // 3. 单线程基础测试
         LOG_INFO << "Argus-eyed system is online.";
